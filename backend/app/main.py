@@ -1,0 +1,47 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.database import engine, Base
+from app.models import models
+
+from app.routers.auth import router as auth_router
+from app.routers.notes import router as notes_router
+from app.routers.dashboard import router as dashboard_router
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="Peblo AI Notes API")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+app.include_router(
+    auth_router,
+    prefix="/auth",
+    tags=["Authentication"]
+)
+
+app.include_router(
+    notes_router,
+    prefix="/notes",
+    tags=["Notes"]
+)
+
+app.include_router(
+    dashboard_router,
+    prefix="/dashboard",
+    tags=["Dashboard"]
+)
+
+@app.get("/")
+def home():
+    return {
+        "message": "Peblo AI Notes API Running"
+    }

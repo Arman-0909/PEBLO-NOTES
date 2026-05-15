@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  html {
+    font-family: 'Nunito', sans-serif;
+  }
+
+  body {
+    background-color: #FAF5FF;
+    color: #4C1D95;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-bubbly-primary {
+    @apply bg-purple-500 text-white font-bold py-3 px-6 rounded-2xl border-b-4 border-purple-700 hover:bg-purple-400 hover:border-purple-600 active:border-b-0 active:translate-y-1 transition-all;
+  }
+  .btn-bubbly-accent {
+    @apply bg-amber-400 text-amber-900 font-bold py-3 px-6 rounded-2xl border-b-4 border-amber-600 hover:bg-amber-300 hover:border-amber-500 active:border-b-0 active:translate-y-1 transition-all;
+  }
+
+  /* Cards */
+  .card-base {
+    @apply bg-white p-6 md:p-8 rounded-[2.5rem] shadow-md border-b-8 border-purple-200;
+  }
+  .card-hover {
+    @apply hover:border-purple-400 hover:-translate-y-2 transition-all duration-300;
+  }
+
+  /* Inputs */
+  .input-base {
+    @apply w-full bg-purple-50 border-2 border-purple-100 rounded-2xl px-5 py-4 font-bold text-purple-900 focus:bg-white focus:border-purple-400 focus:outline-none transition-all placeholder-purple-300;
+  }
+  
+  /* Badges */
+  .badge-purple {
+    @apply text-sm font-black bg-purple-100 text-purple-500 px-4 py-1.5 rounded-xl border-b-2 border-purple-200;
+  }
+  .badge-amber {
+    @apply text-sm font-black bg-amber-100 text-amber-600 px-4 py-1.5 rounded-xl border-b-2 border-amber-200;
+  }
+
+  /* Typography */
+  .heading-1 {
+    @apply text-4xl md:text-5xl font-black text-purple-900 tracking-tight;
+  }
+  .heading-2 {
+    @apply text-2xl md:text-3xl font-black text-purple-900;
+  }
+}
