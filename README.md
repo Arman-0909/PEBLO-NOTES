@@ -176,3 +176,5 @@ See the [`samples/`](./samples/) directory for:
 ---
 
 *Built with ❤️ for the Peblo Full-Stack Challenge.*
+
+---
