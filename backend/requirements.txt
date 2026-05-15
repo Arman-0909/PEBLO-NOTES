@@ -11,3 +11,5 @@ google-generativeai
 pytest
 httpx
 openai
+bcrypt
+pydantic-settings
