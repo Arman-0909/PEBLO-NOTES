@@ -20,7 +20,7 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-purple-50 text-purple-900 font-['Nunito'] selection:bg-amber-200 selection:text-amber-900">
+      <div className="min-h-screen flex flex-col font-['Nunito'] selection:bg-amber-200 selection:text-amber-900">
         <Navbar />
         <main className="flex-1 container mx-auto p-4 md:p-8 max-w-5xl">
           <Routes>
