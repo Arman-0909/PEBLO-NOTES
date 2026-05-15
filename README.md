@@ -1,56 +1,106 @@
-# Peblo AI Notes App 🚀
+# Peblo Notes — AI-Powered Notes Workspace
 
-A modern, full-stack, AI-powered notes application built with a playful and professional "bubbly" aesthetic. The app allows users to create, manage, archive, and share notes publicly, while utilizing OpenRouter AI to instantly generate summaries and extract key action items.
+> **Built for the Peblo Full-Stack Developer Take-Home Challenge.**
+> A lightweight, collaborative, AI-powered notes workspace — clean architecture, polished UI, meaningful AI integration.
+
+---
 
 ## ✨ Features
-- **AI-Powered Insights:** Automatically summarizes notes and extracts actionable tasks using OpenRouter AI.
-- **Rich Markdown Editor:** Write notes with formatting using Markdown, complete with a live preview.
-- **Productivity Dashboard:** View statistics, recent activity, and your most frequently used tags.
-- **Public Sharing:** Share notes with the world using an automatically generated public link.
-- **Archive System:** Keep your workspace clean by archiving notes you no longer need.
-- **Power-User Shortcuts:** Hit `Alt+N` to quickly create a note, or `Ctrl+S` to save instantly.
 
-## 🛠️ Technology Stack
-- **Frontend**: React, Vite, Tailwind CSS v4, Lucide React, React-Markdown.
-- **Backend**: Python 3.13, FastAPI, SQLAlchemy, PostgreSQL.
-- **AI Integration**: OpenRouter API.
-- **Authentication**: JWT (JSON Web Tokens).
+### Core Requirements ✅
+| Feature | Implementation |
+|---|---|
+| **Authentication** | JWT-based signup & login, bcrypt password hashing, protected routes |
+| **Notes Workspace** | Create, edit, archive notes with Markdown support and tag organisation |
+| **AI Integration** | Generates a summary, action items list, and a suggested title via OpenRouter |
+| **Search & Filtering** | Live keyword search + tag filter with 300ms debounce, sorted by `updated_at` |
+| **Public Share Page** | Toggle sharing per note — generates a unique public link, no login required |
+| **Productivity Dashboard** | Active/archived/public/AI-usage stats, recent notes, top tags, weekly activity count |
+
+### Nice-to-Haves ✅
+- 🌙 **Dark mode** — System-preference aware, persisted to localStorage
+- ✏️ **Markdown preview** — Write/Preview tab toggle in the editor
+- ⌨️ **Keyboard shortcuts** — `Alt+N` new note, `Ctrl+S` save
+- 🧪 **Automated tests** — Pytest integration tests with isolated SQLite database
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Choice |
+|---|---|
+| Frontend | React 19, Vite, Tailwind CSS v4 |
+| Backend | Python 3.13, FastAPI, SQLAlchemy |
+| Database | PostgreSQL |
+| AI Provider | OpenRouter (DeepSeek model) |
+| Auth | JWT Bearer tokens |
+
+---
+
+## 🏗️ Architecture
+
+```
+PEBLO-NOTES/
+├── backend/                  # FastAPI Python backend
+│   ├── app/
+│   │   ├── core/             # Database engine + JWT security
+│   │   ├── models/           # SQLAlchemy models (User, Note)
+│   │   ├── routers/          # Route handlers (auth, notes, dashboard)
+│   │   ├── schemas/          # Pydantic request/response schemas
+│   │   ├── services/         # AI integration (OpenRouter)
+│   │   └── main.py           # App entry point, CORS config
+│   ├── tests/                # Pytest integration tests (isolated SQLite)
+│   ├── .env.example          # Environment variable template
+│   └── requirements.txt
+│
+└── frontend/                 # React + Vite frontend
+    └── src/
+        ├── components/       # Navbar
+        ├── pages/            # Login, Register, Dashboard, NotesList, NoteEditor, PublicNote
+        ├── api.js            # Axios instance with JWT interceptor
+        └── index.css         # Design system — all Tailwind @layer components
+```
+
+**Design principle:** All styling lives in `index.css` as named component classes (`.btn-danger`, `.card-base`, `.nav-link`). React files contain only logic and structure — no inline Tailwind utility strings.
 
 ---
 
 ## ⚙️ Setup Instructions
 
 ### Prerequisites
-Make sure you have the following installed:
-- [Node.js](https://nodejs.org/) (v18+)
-- [Python](https://www.python.org/) (v3.13+)
-- [PostgreSQL](https://www.postgresql.org/) (Running locally or via cloud like Neon/Supabase)
+- [Node.js](https://nodejs.org/) v18+
+- [Python](https://www.python.org/) 3.13+
+- [PostgreSQL](https://www.postgresql.org/) running locally or via cloud (Neon, Supabase, etc.)
 
-### 1. Configure Environment Variables
-Before running the application, you need to set up your environment variables.
+### 1. Clone & Configure Environment
 
-Navigate to the `backend` folder and create a `.env` file (you can copy `.env.example` if it exists):
 ```bash
-cd backend
-touch .env
+git clone <your-repo-url>
+cd PEBLO-NOTES
 ```
 
-Add the following keys to your `.env` file:
+Copy the environment template and fill in your values:
+```bash
+cp backend/.env.example backend/.env
+```
+
 ```env
-DATABASE_URL=postgresql://your_db_url
-SECRET_KEY=your_super_secret_jwt_signing_key
+DATABASE_URL=postgresql://your_username:your_password@localhost:5432/peblo_notes
+SECRET_KEY=your_super_secret_jwt_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
+Get a free OpenRouter key at [openrouter.ai](https://openrouter.ai/).
+
 ### 2. Install Dependencies
 
-**For the Backend:**
+**Backend:**
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-**For the Frontend:**
+**Frontend:**
 ```bash
 cd frontend
 npm install
@@ -58,33 +108,71 @@ npm install
 
 ### 3. Run the Application
 
-**Start the Backend Server (FastAPI):**
-Open a terminal, navigate to the `backend` folder, and run:
+**Terminal 1 — Backend:**
 ```bash
 cd backend
 uvicorn app.main:app --reload
 ```
-*The backend will run on `http://127.0.0.1:8000`*
+→ API available at `http://127.0.0.1:8000`
+→ Swagger docs at `http://127.0.0.1:8000/docs`
 
-**Start the Frontend Server (Vite React):**
-Open a new terminal, navigate to the `frontend` folder, and run:
+**Terminal 2 — Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
-*The frontend will run on `http://localhost:5173`*
+→ App available at `http://localhost:5173`
 
-### 4. How to Test the Application
-We use `pytest` and `httpx` to run automated integration tests on the FastAPI backend.
+### 4. Run Tests
 
-To run the test suite:
-1. Ensure you are in the `backend` directory.
-2. Ensure you have installed the testing dependencies (`pip install pytest httpx`).
-3. Run the following command:
 ```bash
+cd backend
 pytest tests/
 ```
-The test suite will automatically spin up an isolated, in-memory SQLite database to run the tests, ensuring your actual PostgreSQL database data is not touched or modified. 
+
+Tests run against an isolated in-memory SQLite database — your PostgreSQL data is never touched.
 
 ---
-*Built with ❤️ for the Peblo Full-Stack Challenge!*
+
+## 🔌 API Endpoints
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/auth/register` | Create account | ❌ |
+| POST | `/auth/login` | Login, returns JWT | ❌ |
+| GET | `/notes/` | List notes (search, tag, archive filter) | ✅ |
+| POST | `/notes/` | Create note | ✅ |
+| GET | `/notes/{id}` | Get single note | ✅ |
+| PUT | `/notes/{id}` | Update note | ✅ |
+| DELETE | `/notes/{id}` | Delete note | ✅ |
+| PATCH | `/notes/{id}/archive` | Archive note | ✅ |
+| PATCH | `/notes/{id}/unarchive` | Unarchive note | ✅ |
+| PATCH | `/notes/{id}/share` | Toggle public sharing | ✅ |
+| POST | `/notes/{id}/generate-ai` | Generate AI insights | ✅ |
+| GET | `/notes/share/{share_id}` | View shared note (public) | ❌ |
+| GET | `/dashboard/` | Productivity stats | ✅ |
+
+---
+
+## 🤖 AI Output Format
+
+```json
+{
+  "summary": "A concise 1-2 sentence summary of the note content.",
+  "action_items": ["Review the API structure", "Prepare UI mockups"],
+  "suggested_title": "Sprint Planning Notes"
+}
+```
+
+---
+
+## 📸 Sample Outputs
+
+See the [`samples/`](./samples/) directory for:
+- Example API responses
+- AI-generated output examples
+- Database schema
+
+---
+
+*Built with ❤️ for the Peblo Full-Stack Challenge.*

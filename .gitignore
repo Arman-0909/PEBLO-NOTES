@@ -1,23 +1,32 @@
-# Global Secrets
+# ─── Secrets ──────────────────────────────────────────────
 .env
 .env.*
+!.env.example
 
-# Global Editor
+# ─── Editors ──────────────────────────────────────────────
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
 
-# Frontend
+# ─── Frontend ─────────────────────────────────────────────
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
 frontend/*.local
+frontend/.cache/
 
-# Backend
+# ─── Backend ──────────────────────────────────────────────
 backend/__pycache__/
+backend/**/__pycache__/
 backend/venv/
 backend/.venv/
 backend/env/
 backend/*.sqlite3
+backend/*.db
 backend/*.py[cod]
 backend/*$py.class
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/htmlcov/
+backend/.coverage

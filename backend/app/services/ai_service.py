@@ -14,12 +14,9 @@ client = OpenAI(
 def generate_note_ai(content: str) -> dict:
 
     if not os.getenv("OPENROUTER_API_KEY"):
-        return {
-            "error": "OPENROUTER_API_KEY not set"
-        }
+        return {"error": "OPENROUTER_API_KEY not set"}
 
     try:
-
         prompt = f"""
             You are an AI note summarizer.
 
@@ -32,12 +29,14 @@ def generate_note_ai(content: str) -> dict:
             - DO NOT paraphrase line-by-line
             - Compress the meaning
 
-            Return ONLY valid JSON.
-
-            Example:
+            Return format:
             {{
-            "summary": "your summary here"
+              "summary": "short summary here",
+              "action_items": ["item 1", "item 2"],
+              "suggested_title": "Suggested Title Here"
             }}
+
+            If there are no action items, return an empty list.
 
             NOTE:
             {content}
@@ -45,24 +44,11 @@ def generate_note_ai(content: str) -> dict:
 
         response = client.chat.completions.create(
             model="deepseek/deepseek-v4-flash:free",
-
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-
-            response_format={
-                "type": "json_object"
-            }
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}
         )
 
-        result = response.choices[0].message.content
-
-        return json.loads(result)
+        return json.loads(response.choices[0].message.content)
 
     except Exception as e:
-        return {
-            "error": f"AI failed: {str(e)}"
-        }
+        return {"error": f"AI failed: {str(e)}"}

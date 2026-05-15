@@ -58,6 +58,23 @@ def get_notes(
     return {"notes": notes}
 
 
+@router.get("/{note_id}")
+def get_note(
+    note_id: int,
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    note = db.query(Note).filter(
+        Note.id == note_id,
+        Note.owner == current_user
+    ).first()
+
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return note
+
+
 @router.put("/{note_id}")
 def update_note(
     note_id: int,
