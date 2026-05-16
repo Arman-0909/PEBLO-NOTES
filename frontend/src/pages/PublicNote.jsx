@@ -11,11 +11,19 @@ export default function PublicNote() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get(`/notes/share/${shareId}`)
-      .then(res => setNote(res.data))
-      .catch(() => setError('This note is private or does not exist.'))
-      .finally(() => setLoading(false));
+    loadNote();
   }, [shareId]);
+
+  async function loadNote() {
+    try {
+      const res = await api.get(`/notes/share/${shareId}`);
+      setNote(res.data);
+    } catch {
+      setError('This note is private or does not exist.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-[60vh]">
@@ -25,14 +33,18 @@ export default function PublicNote() {
 
   if (error) return (
     <div className="max-w-xl mx-auto mt-20 card-base text-center">
-      <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 rounded-[2rem] border-b-4 border-red-200 dark:border-red-900/50 flex items-center justify-center mx-auto mb-8 text-5xl font-black">!</div>
+      <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 rounded-[2rem] border-b-4 border-red-200 dark:border-red-900/50 flex items-center justify-center mx-auto mb-8 text-5xl font-black">
+        !
+      </div>
       <h2 className="heading-2 mb-4">Access Denied</h2>
       <p className="text-purple-500 dark:text-purple-400 font-bold text-lg mb-10">{error}</p>
       <Link to="/" className="btn-bubbly-primary text-xl px-10 py-4">Go to Homepage</Link>
     </div>
   );
 
-  const tags = note.tags ? note.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const tags = note.tags
+    ? note.tags.split(',').map(t => t.trim()).filter(Boolean)
+    : [];
 
   return (
     <div className="max-w-3xl mx-auto mt-12 mb-20">
@@ -53,7 +65,9 @@ export default function PublicNote() {
 
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-12">
-            {tags.map(tag => <span key={tag} className="badge-amber px-5 py-2 text-base">{tag}</span>)}
+            {tags.map(tag => (
+              <span key={tag} className="badge-amber px-5 py-2 text-base">{tag}</span>
+            ))}
           </div>
         )}
 
@@ -62,7 +76,9 @@ export default function PublicNote() {
         </div>
 
         <div className="mt-20 pt-10 border-t-4 border-purple-50 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center text-base font-black text-purple-300 dark:text-slate-500 gap-6 transition-colors">
-          <span>Last updated {new Date(note.updated_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          <span>
+            Last updated {new Date(note.updated_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+          </span>
           <Link to="/" className="auth-link">Create your own notes</Link>
         </div>
       </div>

@@ -7,18 +7,24 @@ export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const update = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  function update(e) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
 
   async function submit(e) {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
       const res = await api.post('/auth/login', form);
       localStorage.setItem('token', res.data.access_token);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -26,10 +32,20 @@ export default function Login() {
     <div className="min-h-[85vh] flex items-center justify-center">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={pebloLogo} alt="Peblo Notes" className="h-24 mx-auto object-contain mb-4 hover:scale-105 transition-transform duration-300 drop-shadow-md" />
+          <img
+            src={pebloLogo}
+            alt="Peblo Notes"
+            className="h-24 mx-auto object-contain mb-4 hover:scale-105 transition-transform duration-300 drop-shadow-md"
+          />
           <h1 className="heading-1">Welcome Back!</h1>
-          <p className="text-purple-600 dark:text-purple-300 mt-2 font-bold text-lg">Ready for an adventure in learning?</p>
+          <p className="text-purple-600 dark:text-purple-300 mt-2 font-bold text-lg">
+            Ready for an adventure in learning?
+          </p>
         </div>
+
+        <p className="text-center text-sm text-purple-300 dark:text-slate-500 font-semibold mb-4">
+          Backend hosted on Render free tier. First login may take a few seconds due to cold starts.
+        </p>
 
         <div className="card-base">
           {error && <div className="alert-error">{error}</div>}
@@ -37,17 +53,36 @@ export default function Login() {
           <form onSubmit={submit} className="space-y-6">
             <div>
               <label className="form-label">Explorer Name</label>
-              <input type="text" name="username" value={form.username} onChange={update} required className="input-base" placeholder="Enter your username" />
+              <input
+                type="text"
+                name="username"
+                value={form.username}
+                onChange={update}
+                required
+                className="input-base"
+                placeholder="Enter your username"
+              />
             </div>
             <div>
               <label className="form-label">Secret Code</label>
-              <input type="password" name="password" value={form.password} onChange={update} required className="input-base" placeholder="••••••••" />
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={update}
+                required
+                className="input-base"
+                placeholder="••••••••"
+              />
             </div>
-            <button type="submit" className="w-full btn-bubbly-primary text-xl mt-4">Let's Go!</button>
+            <button type="submit" disabled={loading} className="w-full btn-bubbly-primary text-xl mt-4">
+              {loading ? 'Logging in...' : "Let's Go!"}
+            </button>
           </form>
 
           <p className="mt-8 text-center text-purple-600 dark:text-purple-400 font-bold">
-            New here? <Link to="/register" className="auth-link">Join the club!</Link>
+            New here?{' '}
+            <Link to="/register" className="auth-link">Join the club!</Link>
           </p>
         </div>
       </div>

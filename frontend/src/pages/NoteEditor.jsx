@@ -15,25 +15,25 @@ export default function NoteEditor() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState(null);
   const [activeTab, setActiveTab] = useState('write');
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (!isNew) loadNote();
   }, [id]);
 
-  // Keyboard shortcut Ctrl+S to save
   useEffect(() => {
-    const onKey = (e) => {
+    function onKey(e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         handleSave();
       }
-    };
+    }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [formData, isNew, id]);
 
-  const loadNote = async () => {
+  async function loadNote() {
     try {
       const res = await api.get(`/notes/${id}`);
       const note = res.data;
@@ -43,12 +43,14 @@ export default function NoteEditor() {
     } catch {
       navigate('/notes');
     }
-  };
+  }
 
-  const handleChange = (e) =>
+  function handleChange(e) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
 
-  const handleSave = async () => {
+  async function handleSave() {
+    setSaving(true);
     try {
       if (isNew) {
         const res = await api.post('/notes/', formData);
@@ -60,10 +62,12 @@ export default function NoteEditor() {
       }
     } catch {
       alert('Failed to save note.');
+    } finally {
+      setSaving(false);
     }
-  };
+  }
 
-  const handleDelete = async () => {
+  async function handleDelete() {
     if (!window.confirm('Are you sure you want to delete this note?')) return;
     try {
       await api.delete(`/notes/${id}`);
@@ -71,9 +75,9 @@ export default function NoteEditor() {
     } catch {
       alert('Failed to delete.');
     }
-  };
+  }
 
-  const handleToggleShare = async () => {
+  async function handleToggleShare() {
     try {
       const res = await api.patch(`/notes/${id}/share`);
       setIsPublic(res.data.public);
@@ -81,33 +85,57 @@ export default function NoteEditor() {
     } catch {
       alert('Failed to update sharing.');
     }
-  };
+  }
 
-  const handleGenerateAI = async () => {
-    if (!formData.content.trim()) return alert('Note is empty!');
+  async function handleGenerateAI() {
+    if (!formData.content.trim()) {
+      alert('Note is empty!');
+      return;
+    }
     setAiLoading(true);
     setAiResult(null);
     try {
       const res = await api.post(`/notes/${id}/generate-ai`);
-      if (res.data.ai_response.error) alert(res.data.ai_response.error);
-      else setAiResult(res.data.ai_response);
+      if (res.data.ai_response.error) {
+        alert(res.data.ai_response.error);
+      } else {
+        setAiResult(res.data.ai_response);
+      }
     } catch {
       alert('AI generation failed.');
     } finally {
       setAiLoading(false);
     }
-  };
+  }
 
-  const copyShareLink = () => {
+  function copyShareLink() {
     navigator.clipboard.writeText(`${window.location.origin}/share/${shareId}`);
     alert('Link copied to clipboard!');
-  };
+  }
+
+  function goBack() {
+    navigate('/notes');
+  }
+
+  const saveButtonClass = saved
+    ? 'flex-1 sm:flex-none btn-bubbly-primary px-10 flex justify-center items-center gap-2 text-xl bg-emerald-400 border-emerald-600'
+    : 'flex-1 sm:flex-none btn-bubbly-primary px-10 flex justify-center items-center gap-2 text-xl';
+
+  function getSaveLabel() {
+    if (saving) return 'Saving...';
+    if (saved) return 'Saved!';
+    return 'Save';
+  }
+
+  const shareButtonClass = isPublic
+    ? 'w-full py-4 rounded-2xl font-black text-lg transition-all mb-5 border-b-4 active:border-b-0 active:translate-y-1 bg-emerald-400 dark:bg-emerald-500 text-white border-emerald-600'
+    : 'w-full py-4 rounded-2xl font-black text-lg transition-all mb-5 border-b-4 active:border-b-0 active:translate-y-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-600';
 
   return (
     <div className="space-y-6 py-4">
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <button onClick={() => navigate('/notes')} className="btn-outline flex items-center gap-2">
+        <button onClick={goBack} className="btn-outline flex items-center gap-2">
           <ChevronLeft size={20} strokeWidth={3} /> Back
         </button>
 
@@ -117,11 +145,8 @@ export default function NoteEditor() {
               <Trash size={20} strokeWidth={3} /> Delete
             </button>
           )}
-          <button
-            onClick={handleSave}
-            className={`flex-1 sm:flex-none btn-bubbly-primary px-10 flex justify-center items-center gap-2 text-xl transition-all ${saved ? 'bg-emerald-400 border-emerald-600' : ''}`}
-          >
-            <Save size={20} strokeWidth={3} /> {saved ? 'Saved!' : 'Save'}
+          <button onClick={handleSave} disabled={saving} className={saveButtonClass}>
+            <Save size={20} strokeWidth={3} /> {getSaveLabel()}
           </button>
         </div>
       </div>
@@ -149,10 +174,16 @@ export default function NoteEditor() {
           </div>
 
           <div className="flex gap-4 mb-4">
-            <button onClick={() => setActiveTab('write')} className={activeTab === 'write' ? 'tab-btn-active' : 'tab-btn'}>
+            <button
+              onClick={() => setActiveTab('write')}
+              className={activeTab === 'write' ? 'tab-btn-active' : 'tab-btn'}
+            >
               Write
             </button>
-            <button onClick={() => setActiveTab('preview')} className={activeTab === 'preview' ? 'tab-btn-active' : 'tab-btn'}>
+            <button
+              onClick={() => setActiveTab('preview')}
+              className={activeTab === 'preview' ? 'tab-btn-active' : 'tab-btn'}
+            >
               Preview
             </button>
           </div>
@@ -177,7 +208,6 @@ export default function NoteEditor() {
         {!isNew && (
           <div className="space-y-6">
 
-            {/* Tutor AI Panel */}
             <div className="bg-amber-400 dark:bg-amber-500/80 rounded-[2.5rem] p-1.5 shadow-md border-b-8 border-amber-500 dark:border-amber-600/80">
               <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem]">
                 <div className="flex items-center gap-3 mb-4 text-amber-500 dark:text-amber-400">
@@ -206,18 +236,28 @@ export default function NoteEditor() {
                   <div className="mt-6 space-y-5">
                     {aiResult.suggested_title && (
                       <div className="card-inner">
-                        <span className="text-sm font-black text-purple-400 dark:text-slate-400 uppercase tracking-wider mb-2 block">Suggested Title</span>
-                        <p className="text-purple-900 dark:text-slate-200 font-bold leading-relaxed">{aiResult.suggested_title}</p>
+                        <span className="text-sm font-black text-purple-400 dark:text-slate-400 uppercase tracking-wider mb-2 block">
+                          Suggested Title
+                        </span>
+                        <p className="text-purple-900 dark:text-slate-200 font-bold leading-relaxed">
+                          {aiResult.suggested_title}
+                        </p>
                       </div>
                     )}
                     <div className="card-inner">
-                      <span className="text-sm font-black text-purple-400 dark:text-slate-400 uppercase tracking-wider mb-2 block">Summary</span>
-                      <p className="text-purple-900 dark:text-slate-200 font-bold leading-relaxed">{aiResult.summary}</p>
+                      <span className="text-sm font-black text-purple-400 dark:text-slate-400 uppercase tracking-wider mb-2 block">
+                        Summary
+                      </span>
+                      <p className="text-purple-900 dark:text-slate-200 font-bold leading-relaxed">
+                        {aiResult.summary}
+                      </p>
                     </div>
 
                     {aiResult.action_items?.length > 0 && (
                       <div className="card-inner-amber">
-                        <span className="text-sm font-black text-amber-500 dark:text-amber-400 uppercase tracking-wider mb-3 block">Action Items</span>
+                        <span className="text-sm font-black text-amber-500 dark:text-amber-400 uppercase tracking-wider mb-3 block">
+                          Action Items
+                        </span>
                         <ul className="space-y-3">
                           {aiResult.action_items.map((item, idx) => (
                             <li key={idx} className="flex items-start gap-3 text-amber-900 dark:text-amber-100 font-bold text-base">
@@ -233,7 +273,6 @@ export default function NoteEditor() {
               </div>
             </div>
 
-            {/* Share Panel */}
             <div className="card-base p-6">
               <div className="flex items-center gap-3 mb-4 text-emerald-500 dark:text-emerald-400">
                 <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-2xl border-b-2 border-emerald-200 dark:border-emerald-900/50">
@@ -246,14 +285,7 @@ export default function NoteEditor() {
                 Make this note public so anyone with the link can read it.
               </p>
 
-              <button
-                onClick={handleToggleShare}
-                className={`w-full py-4 rounded-2xl font-black text-lg transition-all mb-5 border-b-4 active:border-b-0 active:translate-y-1 ${
-                  isPublic
-                    ? 'bg-emerald-400 dark:bg-emerald-500 text-white border-emerald-600'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-600'
-                }`}
-              >
+              <button onClick={handleToggleShare} className={shareButtonClass}>
                 {isPublic ? 'Sharing is On!' : 'Turn On Sharing'}
               </button>
 

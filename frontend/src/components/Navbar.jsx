@@ -9,8 +9,7 @@ export default function Navbar() {
   const token = localStorage.getItem('token');
 
   const [isDark, setIsDark] = useState(
-    () => localStorage.getItem('theme') === 'dark' ||
-      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    () => localStorage.getItem('theme') === 'dark'
   );
 
   useEffect(() => {
@@ -19,12 +18,24 @@ export default function Navbar() {
   }, [isDark]);
 
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.altKey && e.key === 'n') { e.preventDefault(); navigate('/notes/new'); }
-    };
+    function onKey(e) {
+      if (e.altKey && e.key === 'n') {
+        e.preventDefault();
+        navigate('/notes/new');
+      }
+    }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [navigate]);
+
+  function toggleTheme() {
+    setIsDark(!isDark);
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    navigate('/login');
+  }
 
   if (!token) return null;
 
@@ -43,14 +54,16 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button onClick={() => setIsDark(!isDark)} className="btn-icon" title="Toggle Theme">
+          <button onClick={toggleTheme} className="btn-icon" title="Toggle Theme">
             {isDark ? <Sun size={20} strokeWidth={3} /> : <Moon size={20} strokeWidth={3} />}
           </button>
           <Link to="/notes/new" title="Alt + N" className="btn-bubbly-primary py-2.5 px-5 flex items-center gap-2 text-sm">
-            <Plus size={18} strokeWidth={3} /> <span className="hidden sm:inline">New Note</span>
+            <Plus size={18} strokeWidth={3} />
+            <span className="hidden sm:inline">New Note</span>
           </Link>
-          <button onClick={() => { localStorage.removeItem('token'); navigate('/login'); }} className="btn-danger-text">
-            <LogOut size={20} strokeWidth={3} /> <span className="hidden sm:inline">Logout</span>
+          <button onClick={logout} className="btn-danger-text">
+            <LogOut size={20} strokeWidth={3} />
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </nav>
