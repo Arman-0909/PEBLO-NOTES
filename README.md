@@ -136,8 +136,8 @@ Tests run against an isolated in-memory SQLite database — your PostgreSQL data
 
 ## 🌐 Live Deployment
 
-Frontend: https://peblo-frontend.onrender.com
-Backend API: https://peblo-backend.onrender.com
+→ Frontend: https://peblo-frontend.onrender.com
+→ Backend API: https://peblo-backend.onrender.com
 
 ---
 
