@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from datetime import datetime
 
 from app.core.database import get_db
@@ -48,10 +49,15 @@ def get_notes(
     )
 
     if search:
-        query = query.filter(Note.title.contains(search))
+        query = query.filter(
+            or_(
+                Note.title.ilike(f"%{search}%"),
+                Note.content.ilike(f"%{search}%")
+            )
+        )
         
     if tag:
-        query = query.filter(Note.tags.contains(tag))
+        query = query.filter(Note.tags.ilike(f"%{tag}%"))
 
     notes = query.order_by(Note.updated_at.desc()).all()
 

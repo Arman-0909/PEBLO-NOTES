@@ -10,8 +10,9 @@ from app.routers.dashboard import router as dashboard_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Peblo AI Notes API")
-
+app = FastAPI(
+    title="Peblo AI Workspace API"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,7 +21,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 app.include_router(
     auth_router,
@@ -39,6 +39,7 @@ app.include_router(
     prefix="/dashboard",
     tags=["Dashboard"]
 )
+
 
 @app.get("/")
 def home():
