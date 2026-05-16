@@ -31,7 +31,7 @@
 |---|---|
 | Frontend | React 19, Vite, Tailwind CSS v4 |
 | Backend | Python 3.13, FastAPI, SQLAlchemy |
-| Database | PostgreSQL |
+| Database | PostgreSQL | neondb |
 | AI Provider | OpenRouter (DeepSeek model) |
 | Auth | JWT Bearer tokens |
 
@@ -75,7 +75,7 @@ PEBLO-NOTES/
 ### 1. Clone & Configure Environment
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Arman-0909/PEBLO-NOTES
 cd PEBLO-NOTES
 ```
 
@@ -85,9 +85,9 @@ cp backend/.env.example backend/.env
 ```
 
 ```env
-DATABASE_URL=postgresql://your_username:your_password@localhost:5432/peblo_notes
-SECRET_KEY=your_super_secret_jwt_key_here
-OPENROUTER_API_KEY=your_openrouter_api_key
+DATABASE_URL=
+SECRET_KEY=
+OPENROUTER_API_KEY=
 ```
 
 Get a free OpenRouter key at [openrouter.ai](https://openrouter.ai/).
@@ -131,6 +131,13 @@ pytest tests/
 ```
 
 Tests run against an isolated in-memory SQLite database — your PostgreSQL data is never touched.
+
+---
+
+## 🌐 Live Deployment
+
+Frontend: https://peblo-frontend.onrender.com
+Backend API: https://peblo-backend.onrender.com
 
 ---
 
