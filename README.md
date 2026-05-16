@@ -1,4 +1,4 @@
-# Peblo Notes — AI-Powered Notes Workspace
+# Peblo Notes - AI-Powered Notes Workspace
 
 > **Built for the Peblo Full-Stack Developer Take-Home Challenge.**
 > A lightweight, collaborative, AI-powered notes workspace — clean architecture, polished UI, meaningful AI integration.
