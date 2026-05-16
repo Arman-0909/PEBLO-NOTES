@@ -173,7 +173,26 @@ Tests run against an isolated in-memory SQLite database — your PostgreSQL data
 
 ---
 
-## 📸 Sample Outputs
+## 📸 Screenshots
+
+### Workspace
+![Workspace](Github-images/workspace.png)
+
+### Note with AI Summary
+![Note with AI Summary](Github-images/Note_with_AI_Summary.png)
+
+### Share Link (Public View)
+![Share Link](Github-images/Share_Link.png)
+
+### Authentication
+<p float="left">
+  <img src="Github-images/Login.png" width="49%" />
+  <img src="Github-images/Register.png" width="49%" />
+</p>
+
+---
+
+## 📁 Sample Outputs
 
 See the [`samples/`](./samples/) directory for:
 - Example API responses
